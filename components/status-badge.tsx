@@ -8,7 +8,7 @@ interface StatusBadgeProps {
 export function StatusBadge({ status }: StatusBadgeProps) {
   const config = {
     active: {
-      variant: "success" as const,
+      variant: "default" as const,
       icon: CheckCircle2,
       label: "Active",
     },

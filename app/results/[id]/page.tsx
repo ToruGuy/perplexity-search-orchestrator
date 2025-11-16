@@ -78,7 +78,7 @@ export default function ResultDetailPage() {
             )}
           </div>
           <Badge
-            variant={result.status === "success" ? "success" : "destructive"}
+            variant={result.status === "success" ? "default" : "destructive"}
             className="flex items-center gap-1"
           >
             {result.status === "success" ? (

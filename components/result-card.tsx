@@ -24,7 +24,7 @@ export function ResultCard({ result, topicName }: ResultCardProps) {
               {result.query}
             </CardTitle>
             <Badge
-              variant={result.status === "success" ? "success" : "destructive"}
+              variant={result.status === "success" ? "default" : "destructive"}
               className="flex items-center gap-1"
             >
               {result.status === "success" ? (

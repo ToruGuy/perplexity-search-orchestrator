@@ -255,6 +255,7 @@ Created test files in `src-tauri/src/tests/`:
 **Goal**: Replace mock API calls with real Tauri invoke() commands
 
 **Deliverables**:
+
 - Real Tauri invoke() calls for all 10 commands
 - React Context for global state management
 - Event listeners for real-time updates
