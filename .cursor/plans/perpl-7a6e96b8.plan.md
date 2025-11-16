@@ -250,7 +250,7 @@ Created test files in `src-tauri/src/tests/`:
 
 **Branch**: `main`
 
-**Status**: COMPLETE
+**Status**: COMPLETE (Commit: bff6bc3)
 
 **Goal**: Replace mock API calls with real Tauri invoke() commands
 
@@ -259,6 +259,9 @@ Created test files in `src-tauri/src/tests/`:
 - React Context for global state management
 - Event listeners for real-time updates
 - Mock data removed
+- Perplexity API fully integrated and working
+- History page with auto-refresh
+- Real-time toast notifications
 
 ### Phase 6: Frontend - Backend Integration
 
@@ -426,6 +429,7 @@ project-root/
 - ✅ Phase 0: Initial Project Setup (Commit: 2424915)
 - ✅ Phases 1-4: Backend Development (Commit: 07bab45, restored: 4e767fc)
 - ✅ Phase 5: Frontend Development (Commit: 8bf4a3a, merged: e69ea08)
+- ✅ Phase 6: Frontend-Backend Integration (Commit: bff6bc3)
 
 **Remaining Work:**
 
@@ -448,6 +452,9 @@ project-root/
 - ✅ Create topic management UI (list, create, edit, details)
 - ✅ Build results viewing UI (history, individual result pages)
 - ✅ Add settings page with API key management
+- ✅ Connect frontend to backend via invoke() calls and event listeners
+- ✅ Integrate Perplexity API with real searches
+- ✅ Fix all integration bugs (case sensitivity, parameter naming, paths)
 
 **REMAINING:**
 
@@ -456,6 +463,8 @@ project-root/
 - [ ] Create production build and verify binary works correctly
 
 **Next Step:** Phase 7 - Manual testing and polish
+
+**Current State:** Fully functional app with working Perplexity API integration!
 
 ### To-dos
 
