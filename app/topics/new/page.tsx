@@ -27,6 +27,7 @@ import { createTopic } from "@/lib/api"
 import { toast } from "sonner"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { useApp } from "@/lib/app-context"
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
@@ -36,6 +37,7 @@ const formSchema = z.object({
 
 export default function NewTopicPage() {
   const router = useRouter()
+  const { refreshTopics } = useApp()
   const [loading, setLoading] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -51,9 +53,11 @@ export default function NewTopicPage() {
     try {
       setLoading(true)
       await createTopic(values)
+      await refreshTopics() // Refresh the topics list
       toast.success("Topic created successfully")
       router.push("/topics")
     } catch (error) {
+      console.error("Create topic error:", error)
       toast.error("Failed to create topic")
     } finally {
       setLoading(false)

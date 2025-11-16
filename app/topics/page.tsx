@@ -1,17 +1,17 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/status-badge"
 import { IntervalBadge } from "@/components/interval-badge"
-import { Topic } from "@/lib/types"
-import { getTopics, toggleTopic, deleteTopic, triggerSearch } from "@/lib/api"
+import { toggleTopic, deleteTopic, triggerSearch } from "@/lib/api"
 import { Plus, Play } from "lucide-react"
 import { format } from "date-fns"
 import { toast } from "sonner"
+import { useApp } from "@/lib/app-context"
 import {
   Dialog,
   DialogContent,
@@ -22,31 +22,14 @@ import {
 } from "@/components/ui/dialog"
 
 export default function TopicsPage() {
-  const [topics, setTopics] = useState<Topic[]>([])
-  const [loading, setLoading] = useState(true)
+  const { topics, loading, refreshTopics } = useApp()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [topicToDelete, setTopicToDelete] = useState<string | null>(null)
-
-  useEffect(() => {
-    loadTopics()
-  }, [])
-
-  const loadTopics = async () => {
-    try {
-      setLoading(true)
-      const data = await getTopics()
-      setTopics(data)
-    } catch (error) {
-      toast.error("Failed to load topics")
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleToggle = async (id: string) => {
     try {
       await toggleTopic(id)
-      await loadTopics()
+      await refreshTopics()
       toast.success("Topic updated")
     } catch (error) {
       toast.error("Failed to update topic")
@@ -62,7 +45,7 @@ export default function TopicsPage() {
     if (!topicToDelete) return
     try {
       await deleteTopic(topicToDelete)
-      await loadTopics()
+      await refreshTopics()
       toast.success("Topic deleted")
       setDeleteDialogOpen(false)
       setTopicToDelete(null)
@@ -75,7 +58,7 @@ export default function TopicsPage() {
     try {
       toast.info("Triggering search...")
       await triggerSearch(id)
-      await loadTopics()
+      await refreshTopics()
       toast.success("Search completed")
     } catch (error) {
       toast.error("Failed to trigger search")

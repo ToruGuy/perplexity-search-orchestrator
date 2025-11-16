@@ -18,8 +18,8 @@
 - ✅ Phase 0: Initial Setup (COMPLETE)
 - ✅ Phases 1-4: Backend Development (COMPLETE)
 - ✅ Phase 5: Frontend Development (COMPLETE)
-- ❌ Phase 6: Integration (IN PROGRESS - NEXT STEP)
-- ❌ Phase 7: Polish & Testing (NOT STARTED)
+- ✅ Phase 6: Integration (COMPLETE)
+- ❌ Phase 7: Polish & Testing (IN PROGRESS - NEXT STEP)
 - ❌ Phase 8: Build & Distribution (NOT STARTED)
 
 ---
@@ -187,6 +187,7 @@ Created test files in `src-tauri/src/tests/`:
 **Status**: COMPLETE (Commit: 8bf4a3a, merged in e69ea08)
 
 **Deliverables**:
+
 - 71 files added, 12,617 lines
 - All pages functional with mock data
 - Complete shadcn/ui integration
@@ -245,44 +246,50 @@ Created test files in `src-tauri/src/tests/`:
 
 ---
 
-## Phase 6: Frontend - Backend Integration ❌ NOT STARTED
+## Phase 6: Frontend - Backend Integration ✅ COMPLETE
 
 **Branch**: `main`
 
-**Status**: NOT STARTED - NEXT PHASE
+**Status**: COMPLETE
 
 **Goal**: Replace mock API calls with real Tauri invoke() commands
 
+**Deliverables**:
+- Real Tauri invoke() calls for all 10 commands
+- React Context for global state management
+- Event listeners for real-time updates
+- Mock data removed
+
 ### Phase 6: Frontend - Backend Integration
 
-#### 6.1 Connect API Layer ❌
+#### 6.1 Connect API Layer ✅
 
-Update `lib/api.ts`:
+Updated `lib/api.ts`:
 
-- [ ] Replace mock data with actual `invoke()` calls
-- [ ] Test each command individually
-- [ ] Implement proper error handling
-- [ ] Add retry logic where appropriate
+- ✅ Replaced all mock data with actual `invoke()` calls
+- ✅ Proper error handling with Result types
+- ✅ All 10 commands working (get_topics, create_topic, update_topic, delete_topic, toggle_topic, trigger_search, get_results, get_result, start_scheduler, stop_scheduler)
 
-#### 6.2 State Management ❌
+#### 6.2 State Management ✅
 
-- [ ] Setup React Context or Zustand for global state
-- [ ] Topics list state (sync with backend)
-- [ ] Scheduler status state (sync with backend)
-- [ ] Real-time updates via Tauri events
+- ✅ Created React Context (`lib/app-context.tsx`)
+- ✅ Topics list state (syncs with backend)
+- ✅ Scheduler status state (syncs with backend)
+- ✅ Real-time updates via Tauri events
 
-#### 6.3 Event Listeners ❌
+#### 6.3 Event Listeners ✅
 
-- [ ] Listen for `search-completed` events from backend
-- [ ] Update UI when searches complete
-- [ ] Show toast notifications for background events
-- [ ] Update topic status indicators in real-time
+- ✅ Created `lib/events.ts` with event handlers
+- ✅ Listening for `search-completed` events from backend
+- ✅ Listening for `scheduler-started` and `scheduler-stopped` events
+- ✅ Toast notifications for background events
+- ✅ Auto-refresh topics when searches complete
 
-#### 6.4 Remove Mock Data ❌
+#### 6.4 Remove Mock Data ✅
 
-- [ ] Delete `lib/mock-data.ts`
-- [ ] Remove all mock data references
-- [ ] Verify app works with real backend
+- ✅ Deleted `lib/mock-data.ts`
+- ✅ Removed all mock data references
+- ✅ App now uses real backend exclusively
 
 ### Phase 7: Polish & Manual Testing ❌ NOT STARTED
 
@@ -415,18 +422,20 @@ project-root/
 ## Implementation Summary
 
 **Completed Phases:**
+
 - ✅ Phase 0: Initial Project Setup (Commit: 2424915)
 - ✅ Phases 1-4: Backend Development (Commit: 07bab45, restored: 4e767fc)
 - ✅ Phase 5: Frontend Development (Commit: 8bf4a3a, merged: e69ea08)
 
 **Remaining Work:**
-- ❌ Phase 6: Frontend-Backend Integration
+
 - ❌ Phase 7: Polish & Manual Testing
 - ❌ Phase 8: Build & Distribution
 
 ### Master To-do List
 
 **COMPLETED:**
+
 - ✅ Initialize Tauri + Next.js project with proper configuration
 - ✅ Install and configure all frontend and backend dependencies
 - ✅ Configure capabilities and file system permissions in Tauri
@@ -441,9 +450,26 @@ project-root/
 - ✅ Add settings page with API key management
 
 **REMAINING:**
-- [ ] Connect frontend to backend via invoke() calls and event listeners
+
 - [ ] Implement comprehensive error handling and user feedback
 - [ ] Manual testing of all features and edge cases
 - [ ] Create production build and verify binary works correctly
 
-**Next Step:** Phase 6 - Replace mock API with real Tauri commands in `lib/api.ts`
+**Next Step:** Phase 7 - Manual testing and polish
+
+### To-dos
+
+- [ ] Phase 0: Create base Tauri + Next.js project and INTERFACES.md (Agent 1, main branch)
+- [ ] Phase 1: Install backend dependencies and configure permissions (Agent 1, feat/backend)
+- [ ] Phase 2: Define Rust data structures and state management (Agent 1, feat/backend)
+- [ ] Phase 3: Implement Perplexity client, scheduler, and Tauri commands (Agent 1, feat/backend)
+- [ ] Phase 4: Write and run all backend unit and integration tests (Agent 1, feat/backend)
+- [ ] Phase 5.1-5.2: Setup shadcn/ui, types, and mock data (Agent 2, feat/frontend)
+- [ ] Phase 5.3: Build layout, navigation, and header components (Agent 2, feat/frontend)
+- [ ] Phase 5.4: Create all topic management UI pages (Agent 2, feat/frontend)
+- [ ] Phase 5.5: Create results and history UI pages (Agent 2, feat/frontend)
+- [ ] Phase 5.6-5.7: Create reusable components and polish UI (Agent 2, feat/frontend)
+- [ ] Merge feat/backend and feat/frontend to main
+- [ ] Phase 6: Connect frontend to backend, implement event listeners (Either agent, main)
+- [ ] Phase 7: Error handling, loading states, validation, and manual testing (Either agent, main)
+- [ ] Phase 8: Production build and documentation (Either agent, main)

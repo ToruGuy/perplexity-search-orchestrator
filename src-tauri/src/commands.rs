@@ -148,8 +148,14 @@ pub async fn trigger_search(
     app: AppHandle,
     state: tauri::State<'_, AppState>,
 ) -> Result<SearchResult, String> {
-    let api_key = std::env::var("PERPLEXITY_API_KEY")
-        .map_err(|_| "PERPLEXITY_API_KEY not set in environment".to_string())?;
+    // Try to read API key from file first, then fall back to env var
+    let api_key = std::fs::read_to_string("perplexity-api-key.txt")
+        .or_else(|_| std::fs::read_to_string("../perplexity-api-key.txt"))
+        .map(|s| s.trim().to_string())
+        .or_else(|_| std::env::var("PERPLEXITY_API_KEY"))
+        .map_err(|e| format!("API key not found: {:?}. Please create perplexity-api-key.txt in project root", e))?;
+    
+    log::info!("Using API key (first 10 chars): {}...", &api_key[..10.min(api_key.len())]);
 
     let client = PerplexityClient::new(api_key)?;
 
@@ -206,7 +212,10 @@ pub async fn get_results(
     limit: Option<u32>,
     app: AppHandle,
 ) -> Result<Vec<SearchResult>, String> {
-    storage::load_results(&app, &topic_id, limit)
+    log::info!("get_results called with topic_id: {}, limit: {:?}", topic_id, limit);
+    let results = storage::load_results(&app, &topic_id, limit)?;
+    log::info!("Found {} results for topic {}", results.len(), topic_id);
+    Ok(results)
 }
 
 #[tauri::command]
@@ -262,10 +271,15 @@ pub async fn start_scheduler(
 
             // Execute searches for topics that should run
             for topic in topics_to_run {
-                let api_key = match std::env::var("PERPLEXITY_API_KEY") {
+                // Try to read API key from file first, then fall back to env var
+                let api_key = match std::fs::read_to_string("perplexity-api-key.txt")
+                    .or_else(|_| std::fs::read_to_string("../perplexity-api-key.txt"))
+                    .map(|s| s.trim().to_string())
+                    .or_else(|_| std::env::var("PERPLEXITY_API_KEY"))
+                {
                     Ok(key) => key,
                     Err(_) => {
-                        log::error!("PERPLEXITY_API_KEY not set");
+                        log::error!("API key not found. Please create perplexity-api-key.txt in project root");
                         continue;
                     }
                 };
