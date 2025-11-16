@@ -3,7 +3,7 @@
 
 ## Project Architecture
 
-**Frontend**: Next.js 14+ (static export) + shadcn/ui components
+**Frontend**: Vite + React + React Router + shadcn/ui components (migrating from Next.js)
 
 **Backend**: Tauri 2.0 (Rust) with file system and state management
 
@@ -11,16 +11,18 @@
 
 **Storage**: JSON files in AppData directory
 
+**Migration Status**: Phase 7 - Migrating from Next.js App Router to Vite + React for production build compatibility
+
 ## Development Strategy: Sequential Implementation
 
 **ACTUAL IMPLEMENTATION**: All phases completed sequentially on `main` branch
 
 - ✅ Phase 0: Initial Setup (COMPLETE)
 - ✅ Phases 1-4: Backend Development (COMPLETE)
-- ✅ Phase 5: Frontend Development (COMPLETE)
+- ✅ Phase 5: Frontend Development (COMPLETE - Next.js)
 - ✅ Phase 6: Integration (COMPLETE)
-- ❌ Phase 7: Polish & Testing (IN PROGRESS - NEXT STEP)
-- ❌ Phase 8: Build & Distribution (NOT STARTED)
+- 🔄 Phase 7: Migration to Vite + React (IN PROGRESS - NEXT STEP)
+- ❌ Phase 8: Polish & Distribution (BLOCKED - waiting for Phase 7)
 
 ---
 
@@ -295,9 +297,109 @@ Updated `lib/api.ts`:
 - ✅ Removed all mock data references
 - ✅ App now uses real backend exclusively
 
-### Phase 7: Polish & Manual Testing ❌ NOT STARTED
+### Phase 7: Migration to Vite + React 🔄 IN PROGRESS
 
-#### 7.1 Error Handling ❌
+**Decision**: Migrate from Next.js to Vite + React for better Tauri compatibility
+
+**Reason**: Next.js App Router with `output: 'export'` is incompatible with dynamic routes + client components. Vite is designed for SPA/static builds and is the recommended approach for Tauri apps.
+
+**Status**: PLANNING (Commit: 806b96e - documented issue)
+
+**Reference**: See `TAURI_BUILD_ISSUE.md` for detailed analysis
+
+#### 7.1 Setup Vite Project Structure ❌
+
+- [ ] Install Vite and dependencies (`vite`, `@vitejs/plugin-react`)
+- [ ] Create Vite config (`vite.config.ts`)
+- [ ] Setup React Router (`react-router-dom`)
+- [ ] Configure Tailwind for Vite
+- [ ] Update Tauri config to point to Vite dist
+- [ ] Create new `src/` directory structure:
+  ```
+  src/
+  ├── main.tsx           # Entry point
+  ├── App.tsx            # Root component with router
+  ├── routes/            # Route components (migrated from app/)
+  ├── components/        # Copy from current components/
+  ├── lib/               # Copy from current lib/
+  └── styles/            # Global styles
+  ```
+
+#### 7.2 Migrate Routing ❌
+
+- [ ] Install React Router: `npm install react-router-dom`
+- [ ] Create router configuration in `App.tsx`
+- [ ] Convert Next.js pages to React Router routes:
+  - [ ] `/` → Home/Topics list
+  - [ ] `/topics/new` → Create topic
+  - [ ] `/topics/:id` → Topic details
+  - [ ] `/topics/:id/edit` → Edit topic
+  - [ ] `/history` → Search history
+  - [ ] `/results/:id` → Result details
+  - [ ] `/settings` → Settings
+- [ ] Replace `next/navigation` hooks with React Router:
+  - [ ] `useRouter()` → `useNavigate()`
+  - [ ] `useParams()` → `useParams()` (same)
+  - [ ] `Link` from `next/link` → `Link` from `react-router-dom`
+
+#### 7.3 Migrate Components ❌
+
+- [ ] Copy `components/` directory as-is (no changes needed)
+- [ ] Copy `lib/` directory as-is (api.ts, types.ts, utils.ts, events.ts, app-context.tsx)
+- [ ] Update import paths to use Vite's `@/` alias
+- [ ] Remove Next.js-specific code:
+  - [ ] Remove `"use client"` directives
+  - [ ] Remove Next.js Image components (use regular `<img>`)
+  - [ ] Update any Next.js-specific utilities
+
+#### 7.4 Configure Build System ❌
+
+- [ ] Update `package.json` scripts:
+  ```json
+  {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  }
+  ```
+- [ ] Update `src-tauri/tauri.conf.json`:
+  ```json
+  {
+    "build": {
+      "beforeDevCommand": "npm run dev",
+      "beforeBuildCommand": "npm run build",
+      "devUrl": "http://localhost:5173",
+      "frontendDist": "../dist"
+    }
+  }
+  ```
+- [ ] Configure Vite for Tauri integration
+- [ ] Test dev mode: `npm run tauri dev`
+
+#### 7.5 Testing & Verification ❌
+
+- [ ] Verify all routes work in dev mode
+- [ ] Test Tauri commands integration
+- [ ] Verify event listeners work
+- [ ] Test all CRUD operations
+- [ ] Test scheduler functionality
+- [ ] Build production bundle: `npm run tauri build`
+- [ ] Test production binary on macOS
+- [ ] Verify app size and performance
+
+#### 7.6 Cleanup ❌
+
+- [ ] Remove Next.js dependencies from `package.json`
+- [ ] Delete `app/` directory
+- [ ] Delete `next.config.mjs`
+- [ ] Update README with new stack
+- [ ] Update BUILD.md with Vite instructions
+- [ ] Archive `TAURI_BUILD_ISSUE.md` (keep for reference)
+
+### Phase 8: Polish & Distribution ❌ NOT STARTED
+
+#### 8.1 Error Handling ❌
 
 - [ ] Frontend: Display user-friendly error messages
 - [ ] Backend: Proper error types and logging
@@ -305,21 +407,21 @@ Updated `lib/api.ts`:
 - [ ] Network error handling
 - [ ] File system error handling
 
-#### 7.2 Loading States ❌
+#### 8.2 Loading States ❌
 
 - [ ] Skeletons for data loading
 - [ ] Loading indicators for async operations
 - [ ] Disable buttons during operations
 - [ ] Optimistic UI updates where appropriate
 
-#### 7.3 Data Validation ❌
+#### 8.3 Data Validation ❌
 
-- [ ] Frontend form validation (already done in Phase 5.4)
+- [ ] Frontend form validation (migrate from Next.js forms)
 - [ ] Backend input validation in commands
 - [ ] Prevent invalid intervals/queries
 - [ ] Sanitize user input
 
-#### 7.4 End-to-End Manual Testing ❌
+#### 8.4 End-to-End Manual Testing ❌
 
 - [ ] Create/edit/delete topics
 - [ ] Trigger manual searches
@@ -330,26 +432,24 @@ Updated `lib/api.ts`:
 - [ ] Test with multiple topics running
 - [ ] Test scheduler start/stop
 
-### Phase 8: Build & Distribution ❌ NOT STARTED
+#### 8.5 Documentation ❌
 
-#### 8.1 Production Build ❌
-
-- [ ] Build Next.js: `npm run build`
-- [ ] Verify static export works
-- [ ] Build Tauri: `npm run tauri build`
-- [ ] Test production binary on macOS
-- [ ] Check app size and performance
-
-#### 8.2 Documentation ❌
-
-- [ ] Update README with setup instructions
+- [ ] Update README with Vite + React stack
 - [ ] Document prerequisites (Rust, Node.js)
 - [ ] Document .env configuration
 - [ ] Add development guide
-- [ ] Add build instructions
+- [ ] Add build instructions for Vite
 - [ ] Add usage examples with screenshots
 - [ ] Document testing procedures
 - [ ] Add troubleshooting section
+
+#### 8.6 Distribution ❌
+
+- [ ] Configure macOS code signing (optional)
+- [ ] Create DMG installer
+- [ ] Test on clean macOS system
+- [ ] Document installation process
+- [ ] Consider GitHub Releases setup
 
 ---
 
@@ -357,7 +457,7 @@ Updated `lib/api.ts`:
 
 ```
 project-root/
-├── src-tauri/                      # BACKEND AGENT FOCUS
+├── src-tauri/                      # BACKEND - No changes needed
 │   ├── src/
 │   │   ├── lib.rs                  # Main entry, setup
 │   │   ├── commands.rs             # Tauri commands
@@ -367,47 +467,46 @@ project-root/
 │   │   ├── perplexity.rs           # API client
 │   │   ├── scheduler.rs            # Background scheduler
 │   │   └── tests/                  # Unit & integration tests
-│   │       ├── mod.rs
-│   │       ├── storage_tests.rs
-│   │       ├── scheduler_tests.rs
-│   │       └── models_tests.rs
 │   ├── capabilities/
 │   │   └── default.json            # Permissions config
 │   ├── Cargo.toml                  # Rust dependencies
-│   ├── tauri.conf.json             # Tauri configuration
+│   ├── tauri.conf.json             # Tauri configuration (update for Vite)
 │   └── build.rs                    # Build script
-├── app/                            # FRONTEND AGENT FOCUS
-│   ├── layout.tsx
-│   ├── page.tsx
-│   ├── topics/
-│   │   ├── page.tsx
-│   │   ├── new/page.tsx
-│   │   └── [id]/
-│   │       ├── page.tsx
-│   │       └── edit/page.tsx
-│   ├── history/
-│   │   └── page.tsx
-│   └── results/
-│       └── [id]/page.tsx
-├── components/                     # FRONTEND AGENT FOCUS
-│   ├── ui/                         # shadcn components
-│   ├── nav.tsx
-│   ├── header.tsx
-│   ├── topic-card.tsx
-│   ├── result-card.tsx
-│   ├── status-badge.tsx
-│   ├── interval-badge.tsx
-│   └── scheduler-control.tsx
-├── lib/                            # FRONTEND AGENT FOCUS
-│   ├── types.ts                    # TypeScript types
-│   ├── api.ts                      # Tauri invoke wrappers
-│   ├── mock-data.ts                # Mock data (Phase 5 only)
-│   └── utils.ts                    # Utility functions
+├── src/                            # NEW: Vite + React structure
+│   ├── main.tsx                    # Entry point
+│   ├── App.tsx                     # Root with React Router
+│   ├── routes/                     # Migrated from app/
+│   │   ├── Home.tsx                # Topics list
+│   │   ├── TopicNew.tsx            # Create topic
+│   │   ├── TopicDetails.tsx        # View topic
+│   │   ├── TopicEdit.tsx           # Edit topic
+│   │   ├── History.tsx             # Search history
+│   │   ├── ResultDetails.tsx       # View result
+│   │   └── Settings.tsx            # Settings
+│   ├── components/                 # Copied from components/
+│   │   ├── ui/                     # shadcn components
+│   │   ├── Nav.tsx
+│   │   ├── Header.tsx
+│   │   ├── TopicCard.tsx
+│   │   ├── ResultCard.tsx
+│   │   ├── StatusBadge.tsx
+│   │   └── IntervalBadge.tsx
+│   ├── lib/                        # Copied from lib/
+│   │   ├── types.ts                # TypeScript types
+│   │   ├── api.ts                  # Tauri invoke wrappers
+│   │   ├── events.ts               # Event handlers
+│   │   ├── app-context.tsx         # React Context
+│   │   └── utils.ts                # Utility functions
+│   └── styles/
+│       └── globals.css             # Tailwind + global styles
+├── app/                            # TO DELETE after migration
 ├── INTERFACES.md                   # SHARED - Both agents reference
+├── BUILD.md                        # Build instructions
+├── TAURI_BUILD_ISSUE.md            # Migration rationale
 ├── .env.example                    # Environment template
-├── .env                            # Local environment (gitignored)
-├── next.config.mjs                 # Next.js config
-└── package.json                    # Node dependencies
+├── vite.config.ts                  # NEW: Vite config
+├── index.html                      # NEW: Vite entry HTML
+└── package.json                    # Updated dependencies
 ```
 
 ## Critical Implementation Notes
@@ -459,13 +558,20 @@ project-root/
 
 **REMAINING:**
 
+- [ ] **PRIORITY: Migrate from Next.js to Vite + React** (Phase 7)
+  - Reason: Next.js App Router incompatible with Tauri static export + dynamic routes
+  - See: `TAURI_BUILD_ISSUE.md` for detailed analysis
+  - Migration path: Vite is Tauri's recommended frontend for SPA apps
 - [ ] Implement comprehensive error handling and user feedback
 - [ ] Manual testing of all features and edge cases
 - [ ] Create production build and verify binary works correctly
 
-**Next Step:** Phase 7 - Manual testing and polish
+**Next Step:** Phase 7 - Vite + React Migration
 
-**Current State:** Fully functional app with working Perplexity API integration!
+**Current State:** 
+- ✅ Fully functional in dev mode (`npm run tauri dev`)
+- ❌ Cannot build production bundles (Next.js limitation)
+- 🔄 Migrating to Vite for production builds
 
 ### To-dos
 
