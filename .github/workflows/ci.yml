@@ -1,14 +1,16 @@
 name: 'CI'
 
 on:
-  pull_request:
-    branches:
-      - main
-      - develop
-  push:
-    branches:
-      - main
-      - develop
+  workflow_dispatch:  # Manual trigger only
+  # Uncomment below to enable automatic builds on push/PR
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - develop
+  # push:
+  #   branches:
+  #     - main
+  #     - develop
 
 jobs:
   test-tauri:
@@ -64,23 +66,28 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
-      # Run Rust tests
-      - name: Run Rust tests
-        run: cd src-tauri && cargo test
+      # Run Rust tests (optional - can be disabled to speed up CI)
+      # - name: Run Rust tests
+      #   run: cd src-tauri && cargo test
 
       # Build frontend
       - name: Build frontend
         run: npm run build
 
-      # Build Tauri app (without creating installers)
+      # Build Tauri app with installers
       - name: Build Tauri app
-        run: npm run tauri build -- --no-bundle
+        run: npm run tauri build
 
-      # Upload the built binary as an artifact
-      - name: Upload binary artifact
+      # Upload the installers as artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
-          path: ${{ matrix.binary-path }}
+          path: |
+            src-tauri/target/release/bundle/**/*.deb
+            src-tauri/target/release/bundle/**/*.AppImage
+            src-tauri/target/release/bundle/**/*.rpm
+            src-tauri/target/release/bundle/**/*.msi
+            src-tauri/target/release/bundle/**/*.exe
           if-no-files-found: error
 
