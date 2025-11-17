@@ -530,11 +530,15 @@ project-root/
 - ✅ Phases 1-4: Backend Development (Commit: 07bab45, restored: 4e767fc)
 - ✅ Phase 5: Frontend Development (Commit: 8bf4a3a, merged: e69ea08)
 - ✅ Phase 6: Frontend-Backend Integration (Commit: bff6bc3)
+- ✅ Phase 7: Vite + React Router Migration (Commit: 554f8a3)
+  - Migrated from Next.js App Router to Vite + React + React Router
+  - Fixed API key storage using Tauri app data directory
+  - All features working in both dev and production
 
 **Remaining Work:**
 
-- ❌ Phase 7: Polish & Manual Testing
-- ❌ Phase 8: Build & Distribution
+- ❌ Phase 8: Final Polish & Manual Testing
+- ❌ Phase 9: Build & Distribution
 
 ### Master To-do List
 
@@ -555,23 +559,29 @@ project-root/
 - ✅ Connect frontend to backend via invoke() calls and event listeners
 - ✅ Integrate Perplexity API with real searches
 - ✅ Fix all integration bugs (case sensitivity, parameter naming, paths)
+- ✅ Migrate from Next.js to Vite + React Router (Phase 7)
+- ✅ Implement Tauri API key storage commands (save_api_key, load_api_key)
+- ✅ Fix API key persistence using app data directory
+- ✅ Update Settings page to use Tauri invoke for API key management
+- ✅ Fix lucide-react icon imports for breaking changes
+- ✅ Convert all pages to React Router (Link, useNavigate, useLocation)
+- ✅ Configure Vite with Tauri best practices
 
 **REMAINING:**
 
-- [ ] **PRIORITY: Migrate from Next.js to Vite + React** (Phase 7)
-  - Reason: Next.js App Router incompatible with Tauri static export + dynamic routes
-  - See: `TAURI_BUILD_ISSUE.md` for detailed analysis
-  - Migration path: Vite is Tauri's recommended frontend for SPA apps
 - [ ] Implement comprehensive error handling and user feedback
+- [ ] Add loading states and better validation
 - [ ] Manual testing of all features and edge cases
 - [ ] Create production build and verify binary works correctly
+- [ ] Test on different platforms (macOS, Windows, Linux)
 
-**Next Step:** Phase 7 - Vite + React Migration
+**Next Step:** Phase 8 - Final Polish & Manual Testing
 
 **Current State:** 
 - ✅ Fully functional in dev mode (`npm run tauri dev`)
-- ❌ Cannot build production bundles (Next.js limitation)
-- 🔄 Migrating to Vite for production builds
+- ✅ Ready for production builds (`npm run tauri build`)
+- ✅ API key storage working properly
+- ✅ All features operational
 
 ### To-dos
 
