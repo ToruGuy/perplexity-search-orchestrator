@@ -12,26 +12,36 @@ on:
 
 jobs:
   test-tauri:
-    # TODO: Add back other platforms once Ubuntu build is stable
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     include:
-    #       - platform: 'macos-latest'
-    #       - platform: 'ubuntu-22.04'
-    #       - platform: 'windows-latest'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'ubuntu-20.04'
+            artifact-name: 'perplexity-search-orchestrator-linux-x64'
+            binary-path: 'src-tauri/target/release/app'
+          - platform: 'windows-2022'
+            artifact-name: 'perplexity-search-orchestrator-windows-x64'
+            binary-path: 'src-tauri/target/release/app.exe'
+          # TODO: Add macOS once needed
+          # - platform: 'macos-13'  # Intel
+          #   artifact-name: 'perplexity-search-orchestrator-macos-x64'
+          #   binary-path: 'src-tauri/target/release/app'
+          # - platform: 'macos-14'  # Apple Silicon
+          #   artifact-name: 'perplexity-search-orchestrator-macos-arm64'
+          #   binary-path: 'src-tauri/target/release/app'
 
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.platform }}
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       # Install Linux dependencies
-      - name: Install dependencies
+      - name: Install dependencies (Ubuntu only)
+        if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev
+          sudo apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev
 
       # Set up Node.js
       - name: Setup Node.js
@@ -70,7 +80,7 @@ jobs:
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: perplexity-search-orchestrator-linux-x64
-          path: src-tauri/target/release/app
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.binary-path }}
           if-no-files-found: error
 
