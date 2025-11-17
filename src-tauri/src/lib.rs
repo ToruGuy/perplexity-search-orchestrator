@@ -48,6 +48,8 @@ pub fn run() {
       Ok(())
     })
     .invoke_handler(tauri::generate_handler![
+      commands::save_api_key,
+      commands::load_api_key,
       commands::get_topics,
       commands::create_topic,
       commands::update_topic,
@@ -62,3 +64,5 @@ pub fn run() {
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
+
+

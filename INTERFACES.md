@@ -200,3 +200,5 @@ Events are emitted from the backend to the frontend.
   - `"API error: ..."` - Perplexity API errors
   - `"Storage error: ..."` - File system errors
 
+
+

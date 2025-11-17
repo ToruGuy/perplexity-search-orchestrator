@@ -1,11 +1,46 @@
 use tauri::{AppHandle, Manager, Emitter};
 use uuid::Uuid;
 use chrono::Utc;
+use std::fs;
+use std::path::PathBuf;
 use crate::models::{Topic, SearchResult, Interval};
 use crate::state::{AppState, SchedulerState};
 use crate::storage;
 use crate::perplexity::PerplexityClient;
 use crate::scheduler::{calculate_next_run, should_run_now};
+
+#[tauri::command]
+pub async fn save_api_key(api_key: String, app: AppHandle) -> Result<(), String> {
+    // Save to app data directory for security
+    let app_dir = app.path().app_data_dir()
+        .map_err(|e| format!("Failed to get app data directory: {}", e))?;
+    
+    fs::create_dir_all(&app_dir)
+        .map_err(|e| format!("Failed to create app directory: {}", e))?;
+    
+    let key_path = app_dir.join("api-key.txt");
+    fs::write(&key_path, api_key.trim())
+        .map_err(|e| format!("Failed to save API key: {}", e))?;
+    
+    log::info!("API key saved to: {:?}", key_path);
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn load_api_key(app: AppHandle) -> Result<String, String> {
+    let app_dir = app.path().app_data_dir()
+        .map_err(|e| format!("Failed to get app data directory: {}", e))?;
+    
+    let key_path = app_dir.join("api-key.txt");
+    
+    if key_path.exists() {
+        let key = fs::read_to_string(&key_path)
+            .map_err(|e| format!("Failed to read API key: {}", e))?;
+        Ok(key.trim().to_string())
+    } else {
+        Err("API key not found".to_string())
+    }
+}
 
 #[tauri::command]
 
@@ -148,12 +183,9 @@ pub async fn trigger_search(
     app: AppHandle,
     state: tauri::State<'_, AppState>,
 ) -> Result<SearchResult, String> {
-    // Try to read API key from file first, then fall back to env var
-    let api_key = std::fs::read_to_string("perplexity-api-key.txt")
-        .or_else(|_| std::fs::read_to_string("../perplexity-api-key.txt"))
-        .map(|s| s.trim().to_string())
-        .or_else(|_| std::env::var("PERPLEXITY_API_KEY"))
-        .map_err(|e| format!("API key not found: {:?}. Please create perplexity-api-key.txt in project root", e))?;
+    // Load API key from app data directory
+    let api_key = load_api_key(app.clone()).await
+        .map_err(|_| "API key not configured. Please add your API key in Settings.".to_string())?;
     
     log::info!("Using API key (first 10 chars): {}...", &api_key[..10.min(api_key.len())]);
 
