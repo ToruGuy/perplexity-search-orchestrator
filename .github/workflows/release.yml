@@ -1,0 +1,92 @@
+name: 'Release Builds'
+
+on:
+  push:
+    branches:
+      - release
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # macOS builds
+          - platform: 'macos-latest'
+            args: '--target aarch64-apple-darwin' # Apple Silicon (M1/M2/M3)
+          - platform: 'macos-latest'
+            args: '--target x86_64-apple-darwin' # Intel Macs
+          # Linux builds
+          - platform: 'ubuntu-22.04'
+            args: ''
+          # Windows build
+          - platform: 'windows-latest'
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Linux-specific dependencies
+      - name: Install dependencies (Ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev
+
+      # Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      # Install Rust
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # Install macOS targets for cross-compilation
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      # Cache Rust dependencies
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      # Install frontend dependencies
+      - name: Install frontend dependencies
+        run: npm ci
+
+      # Build and release
+      - name: Build and Release Tauri App
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: 'Perplexity Search Orchestrator v__VERSION__'
+          releaseBody: |
+            ## What's Changed
+            
+            See the assets below to download and install this version.
+            
+            ### Installation
+            - **macOS**: Download the `.dmg` file for your architecture (Apple Silicon or Intel)
+            - **Windows**: Download the `.msi` installer
+            - **Linux**: Download the `.AppImage`, `.deb`, or `.rpm` file
+            
+            ### Notes
+            - Make sure to set your Perplexity API key in Settings after installation
+            - All data is stored locally in your AppData directory
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
+

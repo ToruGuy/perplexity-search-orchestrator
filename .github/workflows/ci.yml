@@ -1,0 +1,68 @@
+name: 'CI'
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test-tauri:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+          - platform: 'ubuntu-22.04'
+          - platform: 'windows-latest'
+
+    runs-on: ${{ matrix.platform }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Linux-specific dependencies
+      - name: Install dependencies (Ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev
+
+      # Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      # Install Rust
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      # Cache Rust dependencies
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      # Install dependencies
+      - name: Install frontend dependencies
+        run: npm ci
+
+      # Run Rust tests
+      - name: Run Rust tests
+        run: cd src-tauri && cargo test
+
+      # Build frontend
+      - name: Build frontend
+        run: npm run build
+
+      # Build Tauri app (without bundling)
+      - name: Build Tauri app
+        run: npm run tauri build -- --bundles none
+
