@@ -66,3 +66,11 @@ jobs:
       - name: Build Tauri app
         run: npm run tauri build -- --no-bundle
 
+      # Upload the built binary as an artifact
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: perplexity-search-orchestrator-linux-x64
+          path: src-tauri/target/release/app
+          if-no-files-found: error
+
