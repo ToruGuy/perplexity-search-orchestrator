@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { SearchResult } from "@/lib/types"
@@ -16,7 +16,7 @@ export function ResultCard({ result, topicName }: ResultCardProps) {
     : result.error || "No content"
 
   return (
-    <Link href={`/results/${result.id}`}>
+    <Link to={`/results/${result.id}`}>
       <Card className="hover:bg-accent transition-colors cursor-pointer">
         <CardHeader>
           <div className="flex items-start justify-between">

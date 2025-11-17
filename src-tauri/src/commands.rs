@@ -2,7 +2,6 @@ use tauri::{AppHandle, Manager, Emitter};
 use uuid::Uuid;
 use chrono::Utc;
 use std::fs;
-use std::path::PathBuf;
 use crate::models::{Topic, SearchResult, Interval};
 use crate::state::{AppState, SchedulerState};
 use crate::storage;

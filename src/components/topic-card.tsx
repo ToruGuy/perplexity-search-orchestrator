@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { StatusBadge } from "@/components/status-badge"
@@ -60,7 +60,7 @@ export function TopicCard({ topic, onToggle, onDelete }: TopicCardProps) {
                 </>
               )}
             </Button>
-            <Link href={`/topics/${topic.id}`}>
+            <Link to={`/topics/${topic.id}`}>
               <Button variant="outline" size="sm">
                 <Edit className="h-4 w-4 mr-1" />
                 Edit
