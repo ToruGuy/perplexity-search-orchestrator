@@ -394,21 +394,19 @@ Updated `lib/api.ts`:
 - [x] Test API key storage (fixed localStorage → Tauri app data directory)
 - [x] Create Tauri commands for API key (save_api_key, load_api_key)
 - [x] Test search functionality (working with proper API key storage)
-- [ ] Test scheduler functionality (needs manual testing)
-- [ ] Build production bundle: `npm run tauri build` (ready, not yet tested)
-- [ ] Test production binary on macOS (pending)
-- [ ] Verify app size and performance (pending)
+- [x] Test scheduler functionality (tested)
+- [x] Build production bundle: `npm run tauri build` (tested)
+- [x] Test production binary on macOS (tested)
+- [x] Verify app size and performance (tested)
 
-#### 7.6 Cleanup ⚠️ PARTIAL
+#### 7.6 Cleanup ✅ COMPLETE
 
-- [ ] Remove Next.js dependencies from `package.json` (kept for now, not causing issues)
-- [ ] Delete `app/` directory (kept for reference during migration)
-- [ ] Delete `next.config.mjs` (kept for now)
-- [ ] Update README with new stack
-- [ ] Update BUILD.md with Vite instructions
-- [ ] Archive `TAURI_BUILD_ISSUE.md` (keep for reference)
-
-**Note**: Cleanup deferred to Phase 8 as it's not blocking functionality
+- [x] Remove Next.js dependencies from `package.json` (removed `next` and `eslint-config-next`)
+- [x] Delete `app/` directory (removed)
+- [x] Delete `next.config.mjs` (removed)
+- [x] Update README with new stack (created README.md with Vite + React stack)
+- [x] Update BUILD.md with Vite instructions (updated all references)
+- [x] Archive `TAURI_BUILD_ISSUE.md` (moved to `arch/TAURI_BUILD_ISSUE.md`)
 
 ### Phase 8: Polish & Distribution ❌ NOT STARTED
 

@@ -28,7 +28,7 @@ Before building, ensure you have the following installed:
 ## Project Overview
 
 **Perplexity Search Orchestrator** is a desktop app built with:
-- **Frontend**: Next.js 15 + shadcn/ui
+- **Frontend**: Vite + React + React Router + shadcn/ui
 - **Backend**: Tauri 2.0 (Rust)
 - **API**: Perplexity Sonar Reasoning model
 
@@ -81,7 +81,7 @@ npm run tauri dev
 ```
 
 This will:
-1. Start Next.js dev server on `http://localhost:3000`
+1. Start Vite dev server on `http://localhost:5173`
 2. Compile Rust backend
 3. Open the Tauri window
 
@@ -101,7 +101,7 @@ npm run tauri build
 ### Build Process
 
 The build command will:
-1. **Build Next.js frontend** → exports to `./out` directory
+1. **Build Vite frontend** → outputs to `./dist` directory
 2. **Compile Rust backend** → creates optimized binary
 3. **Bundle the app** → creates macOS `.app` and `.dmg`
 
@@ -179,11 +179,11 @@ Ensure Rust is in your PATH:
 source $HOME/.cargo/env
 ```
 
-### Next.js Build Errors
+### Vite Build Errors
 
 Clear cache and rebuild:
 ```bash
-rm -rf .next out node_modules
+rm -rf dist node_modules
 npm install
 npm run build
 ```
@@ -225,10 +225,14 @@ npm run tauri build
 
 ```
 nextjs-standalone-experiment/
-├── app/                    # Next.js pages (App Router)
-├── components/             # React components
-├── lib/                    # Frontend utilities & types
-├── src-tauri/              # Tauri/Rust backend
+├── src/                    # Frontend (Vite + React)
+│   ├── main.tsx           # Entry point
+│   ├── App.tsx            # Root component with React Router
+│   ├── routes/            # Route components
+│   ├── components/        # React components
+│   ├── lib/               # Frontend utilities & types
+│   └── styles/            # Global styles
+├── src-tauri/             # Tauri/Rust backend
 │   ├── src/
 │   │   ├── main.rs        # Entry point
 │   │   ├── lib.rs         # App setup
@@ -239,8 +243,9 @@ nextjs-standalone-experiment/
 │   │   └── scheduler.rs   # Background scheduler
 │   ├── Cargo.toml         # Rust dependencies
 │   └── tauri.conf.json    # Tauri configuration
+├── vite.config.ts         # Vite configuration
 ├── package.json           # Node dependencies
-└── next.config.mjs        # Next.js configuration
+└── tailwind.config.ts     # Tailwind CSS configuration
 ```
 
 ## Data Storage
@@ -267,7 +272,8 @@ After building:
 ## Resources
 
 - [Tauri Documentation](https://v2.tauri.app/)
-- [Next.js Documentation](https://nextjs.org/docs)
+- [Vite Documentation](https://vitejs.dev/)
+- [React Router Documentation](https://reactrouter.com/)
 - [Project Concept](./CONCEPT.md)
 - [API Interfaces](./INTERFACES.md)
 
